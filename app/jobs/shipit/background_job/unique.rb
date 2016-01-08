@@ -3,7 +3,7 @@ module Shipit
     module Unique
       extend ActiveSupport::Concern
 
-      DEFAULT_TIMEOUT = 10
+      DEFAULT_REDIS_LOCK_EXPIRATION = ENV['DEFAULT_REDIS_LOCK_EXPIRATION'] || 10
 
       included do
         around_perform { |job, block| job.acquire_lock(&block) }
@@ -14,7 +14,7 @@ module Shipit
         mutex = Redis::Lock.new(
           lock_key(*arguments),
           Shipit.redis,
-          expiration: self.class.timeout || DEFAULT_TIMEOUT,
+          expiration: self.class.timeout || DEFAULT_REDIS_LOCK_EXPIRATION,
           timeout: self.class.lock_timeout || 0,
         )
         mutex.lock(&block)

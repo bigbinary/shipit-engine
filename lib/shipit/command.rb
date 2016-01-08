@@ -10,8 +10,9 @@ module Shipit
     Error = Class.new(StandardError)
 
     attr_reader :out, :code, :chdir, :env, :args, :pid, :timeout
+    DEFAULT_COMMAND_TIMEOUT = ENV['COMMAND_TIMEOUT'] || 15.minutes.to_i
 
-    def initialize(*args, default_timeout: 5.minutes.to_i, env: {}, chdir:)
+    def initialize(*args, default_timeout: DEFAULT_COMMAND_TIMEOUT, env: {}, chdir:)
       @args, options = parse_arguments(args)
       @timeout = options['timeout'.freeze] || options[:timeout] || default_timeout
       @env = env
